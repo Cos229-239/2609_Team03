@@ -2,6 +2,9 @@
 
 Start here. Keep this README updated with your team name, members, and a short plan.
 
+Team Members:
+Nahshon Hagan
+
 Prototype pages:
 
 - `index.html` - roster editor prototype landing page
