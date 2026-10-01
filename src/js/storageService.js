@@ -1,0 +1,1 @@
+// Provides reusable localStorage functionality.
