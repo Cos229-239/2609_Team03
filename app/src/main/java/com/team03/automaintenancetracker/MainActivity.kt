@@ -4,22 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.team03.automaintenancetracker.ui.theme.AutoMaintenanceTrackerTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.unit.sp
+import com.team03.automaintenancetracker.screens.HomeScreen
+import com.team03.automaintenancetracker.ui.theme.AutoMaintenanceTrackerTheme
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AutoMaintenanceTrackerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    VehicleScreen( modifier = Modifier.padding(innerPadding)
-                    )
+                    VehicleScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -37,39 +42,80 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun VehicleScreen(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally)
-    {
-        Text("Auto Maintenance Tracker")
+    var currentScreen by remember {
+        mutableStateOf("home")
+    }
 
-        Spacer(modifier = Modifier.height(40.dp))
+    when (currentScreen) {
+        "home" -> {
+            HomeScreen(
+                modifier = modifier,
+                onVehicleClick = {
+                    currentScreen = "vehicle"},
 
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth())
-        {
-            Text("Vehicle Profile")
+                onHistoryClick = {
+                    currentScreen = "history"},
+
+                onOilClick = {
+                    currentScreen = "oil"},
+
+                onReminderClick = {
+                    currentScreen = "reminders"}
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth())
-        {
-            Text("Maintenance History")
+        "vehicle" -> {
+            ScreenPage(
+                title = "Vehicle Profile",
+                onBack = { currentScreen = "home" })
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth())
-        {
-            Text("Oil Change Guide")
+        "history" -> {
+            ScreenPage(
+                title = "Maintenance History",
+                onBack = { currentScreen = "home" })
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        "oil" -> {
+            ScreenPage(
+                title = "Oil Change Guide",
+                onBack = { currentScreen = "home" })
+        }
 
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth())
-        {
-            Text("Reminders")
+        "reminders" -> {
+            ScreenPage(
+                title = "Reminders",
+                onBack = { currentScreen = "home" })
         }
     }
 }
+
+@Composable
+fun ScreenPage(
+    title: String, onBack: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {
+        Text(
+            text = title,
+            fontSize = 32.sp
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Button(
+            onClick = onBack
+        )
+        {
+            Text("Back")
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
