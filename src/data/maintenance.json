@@ -1,0 +1,91 @@
+{
+  "vehicle": {
+    "year": 2018,
+    "make": "Honda",
+    "model": "Civic"
+  },
+  "procedure": {
+    "id": "engine-oil-change",
+    "name": "Engine Oil Change",
+    "category": "Routine Maintenance",
+    "description": "A guided proof-of-concept workflow for performing an engine oil change."
+  },
+  "requiredEquipment": [
+    "Socket wrench and appropriate socket",
+    "Oil filter wrench",
+    "Drain pan",
+    "Funnel",
+    "Jack and jack stands or approved lifting equipment"
+  ],
+  "requiredMaterials": [
+    "Correct engine oil for the specific vehicle configuration",
+    "Compatible replacement oil filter",
+    "Replacement drain plug washer if required"
+  ],
+  "ppe": [
+    "Safety glasses",
+    "Protective gloves",
+    "Closed-toe shoes"
+  ],
+  "safetyWarnings": [
+    "Park the vehicle on a stable, level surface.",
+    "Allow hot engine components and oil to cool before beginning.",
+    "Never work underneath a vehicle supported only by a jack.",
+    "Verify all vehicle-specific specifications using an authoritative service source before performing maintenance."
+  ],
+  "preparation": [
+    "Confirm the exact vehicle and engine configuration.",
+    "Verify the correct oil type, capacity, filter, and service specifications.",
+    "Gather all required tools, materials, and PPE.",
+    "Park on a level surface and secure the vehicle.",
+    "Allow the engine to cool to a safe working temperature."
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "title": "Prepare the vehicle",
+      "instruction": "Secure the vehicle and establish safe access to the oil drain and filter locations."
+    },
+    {
+      "step": 2,
+      "title": "Position the drain pan",
+      "instruction": "Place the drain pan beneath the engine oil drain location."
+    },
+    {
+      "step": 3,
+      "title": "Drain the engine oil",
+      "instruction": "Remove the drain plug using the appropriate tool and allow the used oil to drain completely."
+    },
+    {
+      "step": 4,
+      "title": "Replace the oil filter",
+      "instruction": "Remove the old filter and install the correct replacement according to verified service information."
+    },
+    {
+      "step": 5,
+      "title": "Reinstall the drain plug",
+      "instruction": "Reinstall the drain plug and any required replacement washer using verified vehicle-specific specifications."
+    },
+    {
+      "step": 6,
+      "title": "Add new engine oil",
+      "instruction": "Add the verified type and quantity of engine oil through the engine oil fill location."
+    },
+    {
+      "step": 7,
+      "title": "Verify the service",
+      "instruction": "Check the oil level and inspect the drain plug and filter areas for leaks."
+    }
+  ],
+  "completionChecklist": [
+    "Oil level verified",
+    "Drain plug area checked for leaks",
+    "Oil filter area checked for leaks",
+    "Tools removed from work area",
+    "Used oil and filter prepared for proper recycling or disposal"
+  ],
+  "dataStatus": {
+    "type": "prototype",
+    "notice": "Vehicle-specific capacities, torque specifications, fluid specifications, part numbers, and service intervals must be verified before real-world use."
+  }
+}
