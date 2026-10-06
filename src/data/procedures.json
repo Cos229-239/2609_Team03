@@ -1,0 +1,71 @@
+[
+  {
+    "id": "engine-oil-change",
+    "maintenanceId": "engine-oil-change",
+    "title": "Engine Oil Change",
+    "description": "A guided proof-of-concept workflow for performing an engine oil change.",
+    "tools": [
+      "Socket wrench and appropriate socket",
+      "Oil filter wrench",
+      "Drain pan",
+      "Funnel",
+      "Jack and jack stands or approved lifting equipment"
+    ],
+    "ppe": [
+      "Safety glasses",
+      "Protective gloves",
+      "Closed-toe shoes"
+    ],
+    "preparation": [
+      "Confirm the exact vehicle and engine configuration.",
+      "Verify the correct oil type, capacity, filter, and service specifications.",
+      "Gather required tools, materials, and PPE.",
+      "Park on a level surface and secure the vehicle.",
+      "Allow the engine to cool to a safe working temperature."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "title": "Prepare the vehicle",
+        "instruction": "Secure the vehicle and establish safe access to the oil drain and filter locations."
+      },
+      {
+        "step": 2,
+        "title": "Position the drain pan",
+        "instruction": "Place the drain pan beneath the engine oil drain location."
+      },
+      {
+        "step": 3,
+        "title": "Drain the engine oil",
+        "instruction": "Remove the drain plug using the appropriate tool and allow the used oil to drain completely."
+      },
+      {
+        "step": 4,
+        "title": "Replace the oil filter",
+        "instruction": "Remove the old filter and install the correct replacement according to verified vehicle-specific specifications."
+      },
+      {
+        "step": 5,
+        "title": "Reinstall the drain plug",
+        "instruction": "Reinstall the drain plug and any required replacement washer using verified vehicle-specific specifications."
+      },
+      {
+        "step": 6,
+        "title": "Add new engine oil",
+        "instruction": "Add the verified type and quantity of engine oil through the engine oil fill location after verifying the vehicle-specific specification."
+      },
+      {
+        "step": 7,
+        "title": "Verify the service",
+        "instruction": "Check the oil level and inspect the drain plug and filter areas for leaks."
+      }
+    ],
+    "completionChecks": [
+      "Oil level verified",
+      "Drain plug area checked for leaks",
+      "Oil filter area checked for leaks",
+      "Tools removed from work area",
+      "Used oil and filter prepared for proper recycling or disposal"
+    ]
+  }
+]
