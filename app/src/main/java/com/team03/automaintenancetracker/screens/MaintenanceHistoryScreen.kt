@@ -8,9 +8,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team03.automaintenancetracker.models.MaintenanceRecord
 
 @Composable
 fun MaintenanceHistoryScreen(onBack: () -> Unit){
+
+    val oilChange = MaintenanceRecord(
+        maintenanceType = "Oil Change",
+        mileage = 50000,
+        completedDate = "09/20/2026",
+        notes = "Full Synthetic Oil"
+    )
 
     Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally){
 
@@ -23,9 +31,10 @@ fun MaintenanceHistoryScreen(onBack: () -> Unit){
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Text("Oil Change - 50,000 Miles")
-        Text("Tire Rotation - 45,000 Miles")
-        Text("Brake Inspection - 40,000 Miles")
+        Text("Service: ${oilChange.maintenanceType}")
+        Text("Mileage: ${oilChange.mileage}")
+        Text("Date: ${oilChange.completedDate}")
+        Text("Notes: ${oilChange.notes}")
 
         Spacer(modifier = Modifier.height(40.dp))
 
