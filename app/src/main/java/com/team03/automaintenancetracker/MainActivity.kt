@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.team03.automaintenancetracker.models.Vehicle
 import com.team03.automaintenancetracker.screens.HomeScreen
 import com.team03.automaintenancetracker.screens.MaintenanceHistoryScreen
 import com.team03.automaintenancetracker.screens.OilChangeGuideScreen
@@ -41,6 +42,18 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
         mutableStateOf("home")
     }
 
+    var vehicle by remember {
+        mutableStateOf(
+            Vehicle(
+                make = "",
+                model = "",
+                year = 0,
+                mileage = 0,
+                vin = ""
+            )
+        )
+    }
+
     when (currentScreen) {
         "home" -> {
             HomeScreen(
@@ -61,11 +74,14 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
 
         "vehicle" -> {
             VehicleProfileScreen(
+                vehicle = vehicle,
+                onVehicleChange = {updatedVehicle -> vehicle = updatedVehicle},
                 onBack = { currentScreen = "home" })
         }
 
         "history" -> {
             MaintenanceHistoryScreen(
+                vehicle = vehicle,
                 onBack = { currentScreen = "home" })
         }
 
