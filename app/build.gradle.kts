@@ -4,6 +4,8 @@ plugins {
 }
 
 android {
+    sourceSets["main"].assets.directories.add("../src/data")
+
     namespace = "com.team03.automaintenancetracker"
     compileSdk {
         version = release(37)

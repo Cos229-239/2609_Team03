@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team03.automaintenancetracker.screens.HomeScreen
+import com.team03.automaintenancetracker.screens.RemindersScreen
 import com.team03.automaintenancetracker.ui.theme.AutoMaintenanceTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -83,9 +84,10 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
         }
 
         "reminders" -> {
-            ScreenPage(
-                title = "Reminders",
-                onBack = { currentScreen = "home" })
+            RemindersScreen(
+                modifier = modifier,
+                onBack = { currentScreen = "home" }
+            )
         }
     }
 }
