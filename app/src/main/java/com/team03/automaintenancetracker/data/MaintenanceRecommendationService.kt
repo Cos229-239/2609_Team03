@@ -1,16 +1,7 @@
 package com.team03.automaintenancetracker.data
 
 import android.content.Context
-import org.json.JSONArray
 import org.json.JSONObject
-
-data class Vehicle(
-    val id: String,
-    val year: Int,
-    val make: String,
-    val model: String,
-    val mileage: Int
-)
 
 data class MaintenanceItem(
     val id: String,
@@ -42,22 +33,11 @@ data class VehicleMaintenance(
 object MaintenanceRecommendationService {
     private const val WARNING_DISTANCE = 1000
 
-    fun loadVehicles(context: Context): List<Vehicle> {
-        val vehicles = JSONArray(context.assets.open("vehicles.json").bufferedReader().use { it.readText() })
-        return vehicles.toObjectList().map { json ->
-            val id = json.requiredString("id")
-            val year = json.nonNegativeInt("year")
-                ?: throw IllegalArgumentException("Vehicle '$id' has an invalid year.")
-            val mileage = json.nonNegativeInt("mileage")
-                ?: throw IllegalArgumentException("Vehicle '$id' has invalid mileage.")
-            val make = json.requiredString("make")
-            val model = json.requiredString("model")
-            Vehicle(id, year, make, model, mileage)
-        }
-    }
-
-    fun getVehicleMaintenance(context: Context, vehicleId: String): VehicleMaintenance? {
-        val vehicle = loadVehicles(context).find { it.id == vehicleId } ?: return null
+    fun getVehicleMaintenance(
+        context: Context,
+        vehicle: Vehicle,
+        warningDistance: Int = WARNING_DISTANCE
+    ): VehicleMaintenance {
         val data = JSONObject(context.assets.open("maintenance.json").bufferedReader().use { it.readText() })
         val items = data.getJSONArray("maintenanceItems").toObjectList().map { json ->
             val id = json.requiredString("id")
@@ -95,7 +75,7 @@ object MaintenanceRecommendationService {
             )
         }
 
-        return getVehicleMaintenance(vehicle, items)
+        return getVehicleMaintenance(vehicle, items, warningDistance)
     }
 
     // Apply the same due and 1,000-mile upcoming windows used by the JS service.
@@ -115,7 +95,7 @@ object MaintenanceRecommendationService {
         return VehicleMaintenance(vehicle, due, upcoming)
     }
 
-    private fun JSONArray.toObjectList(): List<JSONObject> =
+    private fun org.json.JSONArray.toObjectList(): List<JSONObject> =
         (0 until length()).map { getJSONObject(it) }
 
     private fun JSONObject.requiredString(key: String): String =
