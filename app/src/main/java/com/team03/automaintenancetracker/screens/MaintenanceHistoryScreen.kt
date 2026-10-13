@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team03.automaintenancetracker.models.MaintenanceRecord
-import com.team03.automaintenancetracker.models.Vehicle
+import com.team03.automaintenancetracker.data.Vehicle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.*
 @Composable

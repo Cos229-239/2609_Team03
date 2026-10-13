@@ -8,19 +8,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.team03.automaintenancetracker.models.Vehicle
+import com.team03.automaintenancetracker.data.Vehicle
+import com.team03.automaintenancetracker.data.VehicleRepository
 import com.team03.automaintenancetracker.screens.HomeScreen
 import com.team03.automaintenancetracker.screens.MaintenanceHistoryScreen
 import com.team03.automaintenancetracker.screens.OilChangeGuideScreen
 import com.team03.automaintenancetracker.screens.ReminderScreen
 import com.team03.automaintenancetracker.screens.VehicleProfileScreen
 import com.team03.automaintenancetracker.ui.theme.AutoMaintenanceTrackerTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONException
+import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun VehicleScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     var currentScreen by remember {
         mutableStateOf("home")
     }
@@ -45,6 +53,7 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
     var vehicle by remember {
         mutableStateOf(
             Vehicle(
+                id = "",
                 make = "",
                 model = "",
                 year = 0,
@@ -52,6 +61,24 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
                 vin = ""
             )
         )
+    }
+    var repositoryError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(context) {
+        try {
+            val savedVehicles = withContext(Dispatchers.IO) {
+                VehicleRepository.loadVehicles(context)
+            }
+            if (vehicle.id.isBlank()) {
+                vehicle = savedVehicles.firstOrNull() ?: vehicle
+            }
+        } catch (error: IOException) {
+            repositoryError = "Could not load saved vehicles: ${error.message ?: "Storage error"}"
+        } catch (error: JSONException) {
+            repositoryError = "Could not read saved vehicles: ${error.message ?: "Invalid vehicle data"}"
+        } catch (error: IllegalArgumentException) {
+            repositoryError = "Could not load saved vehicles: ${error.message ?: "Invalid vehicle data"}"
+        }
     }
 
     when (currentScreen) {
@@ -75,8 +102,21 @@ fun VehicleScreen(modifier: Modifier = Modifier) {
         "vehicle" -> {
             VehicleProfileScreen(
                 vehicle = vehicle,
-                onVehicleChange = {updatedVehicle -> vehicle = updatedVehicle},
-                onBack = { currentScreen = "home" })
+                repositoryError = repositoryError,
+                onVehicleChange = { updatedVehicle ->
+                    try {
+                        vehicle = VehicleRepository.saveVehicle(context, updatedVehicle)
+                        repositoryError = null
+                    } catch (error: IOException) {
+                        repositoryError = "Could not save vehicle: ${error.message ?: "Storage error"}"
+                    } catch (error: JSONException) {
+                        repositoryError = "Could not save vehicle: ${error.message ?: "Invalid vehicle data"}"
+                    } catch (error: IllegalArgumentException) {
+                        repositoryError = "Could not save vehicle: ${error.message ?: "Invalid vehicle data"}"
+                    }
+                },
+                onBack = { currentScreen = "home" }
+            )
         }
 
         "history" -> {

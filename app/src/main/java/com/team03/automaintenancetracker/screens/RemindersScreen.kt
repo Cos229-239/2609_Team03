@@ -103,9 +103,12 @@ fun ReminderScreen(
                 )
 
                 when {
+                    selectedVehicle == null ->
+                        Text("Select a vehicle to see maintenance recommendations.")
                     isLoadingRecommendations -> Text("Loading maintenance recommendations...")
                     recommendations != null -> {
                         val result = recommendations!!
+                        result.errorMessage?.let { Text(it) }
                         Text(
                             "${result.vehicle.year} ${result.vehicle.make} " +
                                 "${result.vehicle.model} | ${result.vehicle.mileage} mi"
@@ -117,9 +120,15 @@ fun ReminderScreen(
                             currentMileage = result.vehicle.mileage
                         )
                         MaintenanceSection(
-                            title = "Upcoming",
-                            emptyMessage = "No upcoming maintenance.",
-                            items = result.upcoming,
+                            title = "Due Soon",
+                            emptyMessage = "No maintenance due soon.",
+                            items = result.dueSoon,
+                            currentMileage = result.vehicle.mileage
+                        )
+                        MaintenanceSection(
+                            title = "Not Due",
+                            emptyMessage = "No maintenance items remain not due.",
+                            items = result.notDue,
                             currentMileage = result.vehicle.mileage
                         )
                     }
@@ -175,10 +184,9 @@ private fun MaintenanceSection(
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(scheduled.item.name, fontSize = 18.sp)
                         scheduled.item.category?.let { Text(it) }
-                        val mileageStatus = if (title == "Due") {
-                            "Due at ${scheduled.dueMileage} ${scheduled.item.mileageUnit}"
-                        } else {
-                            "Due in ${scheduled.dueMileage - currentMileage} " +
+                        val mileageStatus = when (title) {
+                            "Due" -> "Due at ${scheduled.dueMileage} ${scheduled.item.mileageUnit}"
+                            else -> "Due in ${scheduled.dueMileage - currentMileage} " +
                                 "${scheduled.item.mileageUnit} (at ${scheduled.dueMileage})"
                         }
                         Text(mileageStatus)

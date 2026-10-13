@@ -1,6 +1,7 @@
 package com.team03.automaintenancetracker.data
 
 import android.content.Context
+import org.json.JSONArray
 import org.json.JSONObject
 
 data class MaintenanceItem(
@@ -27,75 +28,112 @@ data class ScheduledMaintenance(
 data class VehicleMaintenance(
     val vehicle: Vehicle,
     val due: List<ScheduledMaintenance>,
+    val dueSoon: List<ScheduledMaintenance>,
+    val notDue: List<ScheduledMaintenance>,
+    val errorMessage: String? = null
+) {
     val upcoming: List<ScheduledMaintenance>
-)
+        get() = dueSoon
+}
 
 object MaintenanceRecommendationService {
-    private const val WARNING_DISTANCE = 1000
+    /** Maintenance is due soon when it is within 1,000 odometer units of its service mileage. */
+    const val DUE_SOON_DISTANCE = 1000
 
     fun getVehicleMaintenance(
         context: Context,
         vehicle: Vehicle,
-        warningDistance: Int = WARNING_DISTANCE
+        warningDistance: Int = DUE_SOON_DISTANCE
     ): VehicleMaintenance {
-        val data = JSONObject(context.assets.open("maintenance.json").bufferedReader().use { it.readText() })
-        val items = data.getJSONArray("maintenanceItems").toObjectList().map { json ->
-            val id = json.requiredString("id")
-            val name = json.requiredString("name")
-            val mileageUnit = json.optString("mileageUnit", "miles").lowercase()
-            val interval = if (mileageUnit == "km" || mileageUnit == "kilometers") {
-                json.nonNegativeInt("intervalKm")
-                    ?: json.nonNegativeInt("intervalKilometers")
-                    ?: json.nonNegativeInt("interval")
-            } else {
-                json.nonNegativeInt("intervalMiles")
-                    ?: json.nonNegativeInt("intervalMileage")
-                    ?: json.nonNegativeInt("interval")
-            }
-            val lastServiceMileage = json.nonNegativeInt("lastServiceMileage")
-                ?: json.nonNegativeInt("mileageAtLastService")
-                ?: json.nonNegativeInt("lastMileage")
-                ?: json.nonNegativeInt("serviceMileage")
-            val dueMileage = json.nonNegativeInt("dueMileage")
-                ?: json.nonNegativeInt("nextServiceMileage")
-                ?: json.nonNegativeInt("mileageDue")
-
-            if (dueMileage == null && (lastServiceMileage == null || interval == null)) {
-                throw IllegalArgumentException("Maintenance item '$id' is missing mileage information.")
-            }
-
-            MaintenanceItem(
-                id = id,
-                name = name,
-                category = json.optString("category").takeIf { it.isNotBlank() },
-                mileageUnit = mileageUnit,
-                lastServiceMileage = lastServiceMileage,
-                interval = interval,
-                dueMileage = dueMileage
+        if (vehicle.mileage < 0) {
+            return VehicleMaintenance(
+                vehicle = vehicle,
+                due = emptyList(),
+                dueSoon = emptyList(),
+                notDue = emptyList(),
+                errorMessage = "Vehicle mileage must be zero or greater."
             )
         }
+
+        val data = JSONObject(context.assets.open("maintenance.json").bufferedReader().use { it.readText() })
+        val items = (data.optJSONArray("maintenanceItems") ?: JSONArray())
+            .toObjectList()
+            .map { json ->
+                val id = json.requiredString("id")
+                val name = json.requiredString("name")
+                val mileageUnit = json.optString("mileageUnit", "miles").lowercase()
+                val interval = if (mileageUnit == "km" || mileageUnit == "kilometers") {
+                    json.nonNegativeInt("intervalKm")
+                        ?: json.nonNegativeInt("intervalKilometers")
+                        ?: json.nonNegativeInt("interval")
+                } else {
+                    json.nonNegativeInt("intervalMiles")
+                        ?: json.nonNegativeInt("intervalMileage")
+                        ?: json.nonNegativeInt("interval")
+                }
+                val lastServiceMileage = json.nonNegativeInt("lastServiceMileage")
+                    ?: json.nonNegativeInt("mileageAtLastService")
+                    ?: json.nonNegativeInt("lastMileage")
+                    ?: json.nonNegativeInt("serviceMileage")
+                val dueMileage = json.nonNegativeInt("dueMileage")
+                    ?: json.nonNegativeInt("nextServiceMileage")
+                    ?: json.nonNegativeInt("mileageDue")
+
+                if (dueMileage == null && (lastServiceMileage == null || interval == null)) {
+                    throw IllegalArgumentException("Maintenance item '$id' is missing mileage information.")
+                }
+
+                MaintenanceItem(
+                    id = id,
+                    name = name,
+                    category = json.optString("category").takeIf { it.isNotBlank() },
+                    mileageUnit = mileageUnit,
+                    lastServiceMileage = lastServiceMileage,
+                    interval = interval,
+                    dueMileage = dueMileage
+                )
+            }
 
         return getVehicleMaintenance(vehicle, items, warningDistance)
     }
 
-    // Apply the same due and 1,000-mile upcoming windows used by the JS service.
+    /**
+     * The data asset supplies prototype service anchors and intervals; the vehicle's current
+     * mileage determines whether each next service milestone is due, due soon, or not due.
+     * MaintenanceRecord is not persisted or linked to a vehicle/item yet, so history cannot
+     * safely replace those prototype anchors.
+     */
     fun getVehicleMaintenance(
         vehicle: Vehicle,
         items: List<MaintenanceItem>,
-        warningDistance: Int = WARNING_DISTANCE
+        warningDistance: Int = DUE_SOON_DISTANCE
     ): VehicleMaintenance {
+        if (vehicle.mileage < 0) {
+            return VehicleMaintenance(
+                vehicle = vehicle,
+                due = emptyList(),
+                dueSoon = emptyList(),
+                notDue = emptyList(),
+                errorMessage = "Vehicle mileage must be zero or greater."
+            )
+        }
+
         val scheduled = items.mapNotNull { item ->
             item.nextDueMileage()?.let { ScheduledMaintenance(item, it) }
         }
         val due = scheduled.filter { it.dueMileage <= vehicle.mileage }
-        val upcoming = scheduled.filter {
+        val dueSoonDistance = warningDistance.coerceAtLeast(0)
+        val dueSoon = scheduled.filter {
             val distance = it.dueMileage - vehicle.mileage
-            distance in 1..warningDistance
+            distance in 1..dueSoonDistance
         }
-        return VehicleMaintenance(vehicle, due, upcoming)
+        val notDue = scheduled.filter {
+            it.dueMileage - vehicle.mileage > dueSoonDistance
+        }
+        return VehicleMaintenance(vehicle, due, dueSoon, notDue)
     }
 
-    private fun org.json.JSONArray.toObjectList(): List<JSONObject> =
+    private fun JSONArray.toObjectList(): List<JSONObject> =
         (0 until length()).map { getJSONObject(it) }
 
     private fun JSONObject.requiredString(key: String): String =
