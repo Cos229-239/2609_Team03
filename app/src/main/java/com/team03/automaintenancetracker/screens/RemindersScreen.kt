@@ -31,6 +31,8 @@ import com.team03.automaintenancetracker.data.VehicleMaintenance
 import com.team03.automaintenancetracker.data.VehicleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONException
+import java.io.IOException
 
 @Composable
 fun ReminderScreen(
@@ -44,6 +46,7 @@ fun ReminderScreen(
     var isLoadingVehicles by remember { mutableStateOf(true) }
     var isLoadingRecommendations by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isAddingVehicle by remember { mutableStateOf(false) }
 
     LaunchedEffect(context) {
         try {
@@ -91,17 +94,60 @@ fun ReminderScreen(
             Text("Back")
         }
 
-        when {
-            isLoadingVehicles -> Text("Loading vehicles...")
-            errorMessage != null -> Text(errorMessage.orEmpty())
-            vehicles.isEmpty() -> Text("No vehicles available.")
-            else -> {
-                VehicleSelector(
-                    vehicles = vehicles,
-                    selectedVehicle = selectedVehicle,
-                    onVehicleSelected = { selectedVehicle = it }
-                )
+        if (isAddingVehicle) {
+            VehicleProfileScreen(
+                vehicle = Vehicle(
+                    id = "",
+                    year = 0,
+                    make = "",
+                    model = "",
+                    mileage = 0
+                ),
+                repositoryError = errorMessage,
+                onVehicleChange = { newVehicle ->
+                    try {
+                        val savedVehicle = VehicleRepository.saveVehicle(context, newVehicle)
+                        vehicles = VehicleRepository.loadVehicles(context)
+                        selectedVehicle = savedVehicle
+                        errorMessage = null
+                        isAddingVehicle = false
+                    } catch (error: IOException) {
+                        errorMessage = "Could not save vehicle: ${error.message ?: "Storage error"}"
+                    } catch (error: JSONException) {
+                        errorMessage = "Could not save vehicle: ${error.message ?: "Invalid vehicle data"}"
+                    } catch (error: IllegalArgumentException) {
+                        errorMessage = "Could not save vehicle: ${error.message ?: "Unknown error"}"
+                    }
+                },
+                onBack = {
+                    errorMessage = null
+                    isAddingVehicle = false
+                }
+            )
+        } else {
+            when {
+                isLoadingVehicles -> Text("Loading vehicles...")
+                errorMessage != null -> Text(errorMessage.orEmpty())
+                vehicles.isEmpty() -> Text("No vehicles available yet. Add a vehicle to get started.")
+                else -> {
+                    VehicleSelector(
+                        vehicles = vehicles,
+                        selectedVehicle = selectedVehicle,
+                        onVehicleSelected = { selectedVehicle = it }
+                    )
+                }
+            }
 
+            if (!isLoadingVehicles) {
+                Button(onClick = {
+                    errorMessage = null
+                    isAddingVehicle = true
+                }) {
+                    Text("Add Vehicle")
+                }
+            }
+
+            if (vehicles.isNotEmpty() && errorMessage == null) {
                 when {
                     selectedVehicle == null ->
                         Text("Select a vehicle to see maintenance recommendations.")

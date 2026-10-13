@@ -19,7 +19,8 @@ class MaintenanceRecommendationServiceTest {
         val result = MaintenanceRecommendationService.getVehicleMaintenance(vehicle, items)
 
         assertEquals(listOf("due"), result.due.map { it.item.id })
-        assertEquals(listOf("upcoming"), result.upcoming.map { it.item.id })
+        assertEquals(listOf("upcoming"), result.dueSoon.map { it.item.id })
+        assertEquals(listOf("not-due"), result.notDue.map { it.item.id })
     }
 
     @Test
@@ -32,6 +33,7 @@ class MaintenanceRecommendationServiceTest {
         val result = MaintenanceRecommendationService.getVehicleMaintenance(vehicle, items)
 
         assertEquals(emptyList<String>(), result.due.map { it.item.id })
-        assertEquals(emptyList<String>(), result.upcoming.map { it.item.id })
+        assertEquals(emptyList<String>(), result.dueSoon.map { it.item.id })
+        assertEquals(listOf("later"), result.notDue.map { it.item.id })
     }
 }

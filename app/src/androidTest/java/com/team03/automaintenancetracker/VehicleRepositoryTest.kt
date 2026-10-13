@@ -6,6 +6,9 @@ import com.team03.automaintenancetracker.data.MaintenanceRecommendationService
 import com.team03.automaintenancetracker.data.Vehicle
 import com.team03.automaintenancetracker.data.VehicleRepository
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -44,9 +47,63 @@ class VehicleRepositoryTest {
     }
 
     @Test
+    fun savesNewVehicleAndUsesItsMileageForRecommendations() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val preferences = context.getSharedPreferences("vehicle_repository", android.content.Context.MODE_PRIVATE)
+        val originalVehicles = preferences.getString("vehicles", null)
+
+        try {
+            preferences.edit().remove("vehicles").commit()
+            val savedVehicle = VehicleRepository.saveVehicle(
+                context,
+                Vehicle("", 2020, "Example", "Car", 50000)
+            )
+
+            assertFalse(savedVehicle.id.isBlank())
+            assertTrue(VehicleRepository.loadVehicles(context).contains(savedVehicle))
+
+            val recommendations =
+                MaintenanceRecommendationService.getVehicleMaintenance(context, savedVehicle)
+            assertEquals(50000, recommendations.vehicle.mileage)
+            assertTrue(recommendations.due.any { it.item.id == "engine-oil-change" })
+            assertTrue(recommendations.notDue.any { it.item.id == "tire-rotation" })
+        } finally {
+            val editor = preferences.edit()
+            if (originalVehicles == null) {
+                editor.remove("vehicles")
+            } else {
+                editor.putString("vehicles", originalVehicles)
+            }
+            editor.commit()
+        }
+    }
+
+    @Test
+    fun rejectsInvalidVehicleInformation() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        assertInvalidVehicle(context, Vehicle("", 2020, " ", "Car", 0))
+        assertInvalidVehicle(context, Vehicle("", 2020, "Example", " ", 0))
+        assertInvalidVehicle(context, Vehicle("", 2020, "Example", "Car", -1))
+        assertInvalidVehicle(context, Vehicle("", 0, "Example", "Car", 0))
+    }
+
+    @Test
     fun loadsEmptyVehicleAssetAsNoVehicles() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
         assertEquals(emptyList<Vehicle>(), VehicleRepository.loadVehicles(context))
+    }
+
+    private fun assertInvalidVehicle(
+        context: android.content.Context,
+        vehicle: Vehicle
+    ) {
+        try {
+            VehicleRepository.saveVehicle(context, vehicle)
+            fail("Expected invalid vehicle data to be rejected.")
+        } catch (_: IllegalArgumentException) {
+            // Expected validation failure.
+        }
     }
 }
