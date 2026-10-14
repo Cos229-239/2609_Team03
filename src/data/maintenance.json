@@ -43,6 +43,14 @@
       "lastServiceMileage": 30000,
       "intervalMiles": 30000,
       "mileageUnit": "miles"
+    },
+    {
+      "id": "battery-test",
+      "name": "Battery test and terminal inspection",
+      "category": "Electrical",
+      "lastServiceMileage": 52000,
+      "intervalMiles": 24000,
+      "mileageUnit": "miles"
     }
   ]
 }
