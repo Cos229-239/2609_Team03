@@ -67,5 +67,72 @@
       "Tools removed from work area",
       "Used oil and filter prepared for proper recycling or disposal"
     ]
+  },
+  {
+    "id": "engine-air-filter-replacement",
+    "maintenanceId": "engine-air-filter",
+    "title": "Engine Air Filter Replacement",
+    "description": "A beginner-friendly guide to inspecting and replacing the engine air filter. Follow the vehicle owner's manual for the correct filter and any model-specific instructions.",
+    "tools": [
+      "Correct replacement engine air filter",
+      "Vehicle owner's manual",
+      "Flashlight",
+      "Screwdriver or socket wrench if required by the air-filter housing"
+    ],
+    "ppe": [
+      "Safety glasses",
+      "Protective gloves",
+      "Closed-toe shoes"
+    ],
+    "preparation": [
+      "Confirm the vehicle and engine configuration, and use the owner's manual to identify the correct filter and air-filter housing.",
+      "Park on a level surface, switch off the engine, remove the key, and allow the engine bay to cool.",
+      "Gather the replacement filter, any required tools, and PPE.",
+      "Keep loose clothing, jewelry, and tools clear of moving or hot engine components."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "title": "Locate the air-filter housing",
+        "instruction": "Use the owner's manual to find the engine air-filter housing. Do not confuse it with the cabin air-filter compartment."
+      },
+      {
+        "step": 2,
+        "title": "Open the housing",
+        "instruction": "Release the housing clips or remove its fasteners using the appropriate tool. Lift the cover carefully without pulling or straining attached hoses or wiring."
+      },
+      {
+        "step": 3,
+        "title": "Remove and inspect the old filter",
+        "instruction": "Note the filter's position and airflow direction, then lift it out. Check the housing and old filter for debris or damage."
+      },
+      {
+        "step": 4,
+        "title": "Clean the housing carefully",
+        "instruction": "Wipe loose debris from the housing with a clean, lint-free cloth, keeping debris out of the air intake opening. Do not use liquids or blow debris into the intake."
+      },
+      {
+        "step": 5,
+        "title": "Install the replacement filter",
+        "instruction": "Compare the new filter with the old one to confirm it matches. Seat it in the same orientation, ensuring its edges fit evenly in the housing."
+      },
+      {
+        "step": 6,
+        "title": "Close the housing",
+        "instruction": "Reinstall the cover and securely fasten all clips or fasteners. Make sure no edges are pinched and any hoses or wiring are back in their original positions."
+      },
+      {
+        "step": 7,
+        "title": "Verify the installation",
+        "instruction": "Check that the housing is fully closed and the filter is seated. Remove tools and materials from the engine bay before starting the vehicle."
+      }
+    ],
+    "completionChecks": [
+      "Replacement filter matches the vehicle-specific requirement",
+      "Filter is correctly oriented and seated evenly",
+      "Air-filter housing is closed and all clips or fasteners are secure",
+      "No debris, loose tools, or materials remain in the engine bay",
+      "Old filter is disposed of according to local requirements"
+    ]
   }
 ]
