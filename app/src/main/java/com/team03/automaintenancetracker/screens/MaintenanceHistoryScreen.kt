@@ -13,6 +13,8 @@ import com.team03.automaintenancetracker.models.MaintenanceRecord
 import com.team03.automaintenancetracker.data.Vehicle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 @Composable
 fun MaintenanceHistoryScreen(
     vehicle: Vehicle,
@@ -26,11 +28,11 @@ fun MaintenanceHistoryScreen(
 
     var serviceNotes by remember { mutableStateOf("")}
 
-    var maintenanceRecord by remember { mutableStateOf<MaintenanceRecord?>(null)}
+    var maintenanceRecord by remember { mutableStateOf(listOf<MaintenanceRecord>())}
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Text(
             text = "Maintenance History",
@@ -90,26 +92,31 @@ fun MaintenanceHistoryScreen(
                 completedDate = serviceDate,
                 notes = serviceNotes
             )
-            maintenanceRecord = newRecord
+            maintenanceRecord = maintenanceRecord + newRecord
+
+            serviceType = ""
+            serviceMileage = ""
+            serviceDate = ""
+            serviceNotes = ""
         }) {
             Text("Save Record")
         }
 
-        if (maintenanceRecord != null) {
-
-            val savedRecord = maintenanceRecord!!
+        if (maintenanceRecord.isNotEmpty()) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Saved Maintenance Record")
+            Text(text = "Saved Maintenance Record", fontSize = 22.sp)
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            maintenanceRecord.forEach { record ->
 
-            Text("Service: ${savedRecord.maintenanceType}")
-            Text("Mileage: ${savedRecord.mileage}")
-            Text("Date: ${savedRecord.completedDate}")
-            Text("Notes: ${savedRecord.notes}")
+                Text("Service: ${record.maintenanceType}")
+                Text("Mileage: ${record.mileage}")
+                Text("Date: ${record.completedDate}")
+                Text("Notes: ${record.notes}")
+            }
         }
             Spacer(modifier = Modifier.height(20.dp))
 

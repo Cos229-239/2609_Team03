@@ -16,7 +16,7 @@ fun OilChangeGuideScreen(onBack: () -> Unit){
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally){
 
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Text(
             text = "Oil Change Guide",
