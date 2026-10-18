@@ -110,8 +110,8 @@ fun MaintenanceHistoryScreen(
             Text("Mileage: ${savedRecord.mileage}")
             Text("Date: ${savedRecord.completedDate}")
             Text("Notes: ${savedRecord.notes}")
-
-            Spacer(modifier = Modifier.height(40.dp))
+        }
+            Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = onBack
@@ -120,4 +120,3 @@ fun MaintenanceHistoryScreen(
             }
         }
     }
-}
