@@ -2,6 +2,7 @@ package com.team03.automaintenancetracker.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,7 @@ fun MaintenanceHistoryScreen(
     var serviceNotes by remember { mutableStateOf("")}
 
     var maintenanceRecord by remember { mutableStateOf(listOf<MaintenanceRecord>())}
+    var validationError by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -82,13 +84,32 @@ fun MaintenanceHistoryScreen(
             label = { Text("Notes") }
         )
 
+        validationError?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(onClick = {
+            val parsedMileage = serviceMileage.toIntOrNull()
+            validationError = when {
+                serviceType.isBlank() -> "Enter a service type."
+                serviceMileage.isBlank() -> "Enter a mileage."
+                parsedMileage == null -> "Enter a valid whole-number mileage."
+                parsedMileage < 0 -> "Mileage cannot be negative."
+                else -> null
+            }
+
+            if (validationError != null || parsedMileage == null) {
+                return@Button
+            }
 
             val newRecord = MaintenanceRecord(
                 maintenanceType = serviceType,
-                mileage = serviceMileage.toIntOrNull() ?: 0,
+                mileage = parsedMileage,
                 completedDate = serviceDate,
                 notes = serviceNotes
             )
