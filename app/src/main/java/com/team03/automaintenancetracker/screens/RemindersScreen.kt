@@ -11,8 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,8 +29,7 @@ import com.team03.automaintenancetracker.data.VehicleMaintenance
 import com.team03.automaintenancetracker.data.VehicleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONException
-import java.io.IOException
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun ReminderScreen(
@@ -46,7 +43,6 @@ fun ReminderScreen(
     var isLoadingVehicles by remember { mutableStateOf(true) }
     var isLoadingRecommendations by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var isAddingVehicle by remember { mutableStateOf(false) }
 
     LaunchedEffect(context) {
         try {
@@ -89,61 +85,26 @@ fun ReminderScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Reminders", fontSize = 32.sp)
-        Button(onClick = onBack) {
-            Text("Back")
-        }
+        Spacer(modifier = Modifier.height(40.dp))
 
-        if (isAddingVehicle) {
-            VehicleProfileScreen(
-                vehicle = Vehicle(
-                    id = "",
-                    year = 0,
-                    make = "",
-                    model = "",
-                    mileage = 0
-                ),
-                repositoryError = errorMessage,
-                onVehicleChange = { newVehicle ->
-                    try {
-                        val savedVehicle = VehicleRepository.saveVehicle(context, newVehicle)
-                        vehicles = VehicleRepository.loadVehicles(context)
-                        selectedVehicle = savedVehicle
-                        errorMessage = null
-                        isAddingVehicle = false
-                    } catch (error: IOException) {
-                        errorMessage = "Could not save vehicle: ${error.message ?: "Storage error"}"
-                    } catch (error: JSONException) {
-                        errorMessage = "Could not save vehicle: ${error.message ?: "Invalid vehicle data"}"
-                    } catch (error: IllegalArgumentException) {
-                        errorMessage = "Could not save vehicle: ${error.message ?: "Unknown error"}"
-                    }
-                },
-                onBack = {
-                    errorMessage = null
-                    isAddingVehicle = false
-                }
-            )
-        } else {
+        Text("Reminders",
+            fontSize = 32.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth())
+
             when {
                 isLoadingVehicles -> Text("Loading vehicles...")
                 errorMessage != null -> Text(errorMessage.orEmpty())
                 vehicles.isEmpty() -> Text("No vehicles available yet. Add a vehicle to get started.")
                 else -> {
-                    VehicleSelector(
-                        vehicles = vehicles,
-                        selectedVehicle = selectedVehicle,
-                        onVehicleSelected = { selectedVehicle = it }
-                    )
-                }
-            }
-
-            if (!isLoadingVehicles) {
-                Button(onClick = {
-                    errorMessage = null
-                    isAddingVehicle = true
-                }) {
-                    Text("Add Vehicle")
+                    selectedVehicle?.let { vehicle ->
+                     Text(
+                         text = "${vehicle.year} ${vehicle.make} ${vehicle.model} | ${vehicle.mileage} mi",
+                         fontSize = 18.sp,
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.fillMaxWidth()
+                     )
+                    }
                 }
             }
 
@@ -155,10 +116,6 @@ fun ReminderScreen(
                     recommendations != null -> {
                         val result = recommendations!!
                         result.errorMessage?.let { Text(it) }
-                        Text(
-                            "${result.vehicle.year} ${result.vehicle.make} " +
-                                "${result.vehicle.model} | ${result.vehicle.mileage} mi"
-                        )
                         MaintenanceSection(
                             title = "Due",
                             emptyMessage = "No maintenance currently due.",
@@ -180,38 +137,15 @@ fun ReminderScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun VehicleSelector(
-    vehicles: List<Vehicle>,
-    selectedVehicle: Vehicle?,
-    onVehicleSelected: (Vehicle) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
-        Button(onClick = { expanded = true }) {
-            Text(selectedVehicle?.let { "${it.year} ${it.make} ${it.model}" } ?: "Select vehicle")
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            vehicles.forEach { vehicle ->
-                DropdownMenuItem(
-                    text = { Text("${vehicle.year} ${vehicle.make} ${vehicle.model}") },
-                    onClick = {
-                        onVehicleSelected(vehicle)
-                        expanded = false
-                    }
-                )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = onBack) {
+                Text("Back")
             }
         }
     }
-}
+
+
+
 
 @Composable
 private fun MaintenanceSection(
@@ -221,7 +155,10 @@ private fun MaintenanceSection(
     currentMileage: Int
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(title, fontSize = 20.sp)
+        Text(title,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth())
         if (items.isEmpty()) {
             Text(emptyMessage)
         } else {
