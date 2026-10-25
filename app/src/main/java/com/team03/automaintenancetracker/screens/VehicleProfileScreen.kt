@@ -102,7 +102,7 @@ fun VehicleProfileScreen(
         OutlinedTextField(
             value = vin,
             onValueChange = { newVin -> vin = newVin },
-            label = { Text("VIN") },
+            label = { Text("VIN (optional)") },
             singleLine = true
         )
 

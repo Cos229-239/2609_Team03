@@ -134,5 +134,60 @@
       "No debris, loose tools, or materials remain in the engine bay",
       "Old filter is disposed of according to local requirements"
     ]
+  },
+  {
+    "id": "battery-visual-inspection-voltage-check",
+    "maintenanceId": "battery-test",
+    "title": "Battery Visual Inspection and Basic Voltage Check",
+    "description": "A beginner-friendly guide to visually inspecting a vehicle battery and checking its voltage. A voltage reading alone is not a definitive battery-health test; follow vehicle and battery manufacturer guidance.",
+    "tools": [
+      "Vehicle owner's manual",
+      "Digital multimeter",
+      "Flashlight"
+    ],
+    "ppe": [
+      "Safety glasses",
+      "Protective gloves"
+    ],
+    "preparation": [
+      "Confirm the vehicle's battery location and safety instructions in the owner's manual.",
+      "Park safely, switch off the vehicle, remove the key, and work in a well-ventilated area.",
+      "Gather the multimeter, flashlight, and PPE.",
+      "Keep sparks, flames, jewelry, and tools away from the battery terminals. Do not touch or disconnect the terminals.",
+      "Do not continue if the battery is swollen, leaking, cracked, or otherwise damaged; seek professional help."
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "title": "Locate and inspect the battery",
+        "instruction": "Use the owner's manual to locate the battery. With the vehicle off, look for cracks, swelling, leaks, or visible corrosion without disturbing the terminals."
+      },
+      {
+        "step": 2,
+        "title": "Prepare the multimeter",
+        "instruction": "Follow the multimeter instructions and set it to measure DC voltage on an appropriate range. If you are unsure of the setting, stop and ask for assistance."
+      },
+      {
+        "step": 3,
+        "title": "Measure the battery voltage",
+        "instruction": "Following the multimeter and vehicle instructions, place the red probe on the positive terminal and the black probe on the negative terminal. Keep the probes from touching each other or bridging the terminals."
+      },
+      {
+        "step": 4,
+        "title": "Record and interpret the reading",
+        "instruction": "Record the displayed voltage and compare it with the guidance for the vehicle and battery. A basic voltage reading does not confirm battery health; arrange a professional battery test if the reading is outside guidance or symptoms continue."
+      },
+      {
+        "step": 5,
+        "title": "Finish safely",
+        "instruction": "Remove the probes carefully without letting them touch each other or bridge the terminals, then put away the meter and tools. Leave the battery and terminals undisturbed."
+      }
+    ],
+    "completionChecks": [
+      "Battery inspected without touching or disconnecting the terminals",
+      "Voltage reading recorded and compared with vehicle or battery guidance",
+      "No tools or materials left in the engine bay",
+      "Professional battery testing recommended if the reading is outside guidance or symptoms remain"
+    ]
   }
 ]
